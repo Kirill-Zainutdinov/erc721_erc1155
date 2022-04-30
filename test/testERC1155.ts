@@ -193,17 +193,17 @@ describe("Testing ERC1155",  function () {
 
     // отправим на адрес контракта и убедимся, что всё работает
     ownerBalanceBefore = await erc1155.balanceOf(owner.address, tokenId);
-    let contractBalanceBefore = await erc1155.balanceOf(erc1155.address, tokenId);
+    let contractBalanceBefore = await erc1155.balanceOf(test.address, tokenId);
 
-    tx  = await erc1155.safeTransferFrom(owner.address, erc1155.address, tokenId, amount, "0x00")
+    tx  = await erc1155.safeTransferFrom(owner.address, test.address, tokenId, amount, "0x00")
     await tx.wait();
 
     expect(await erc1155.balanceOf(owner.address, tokenId)).equal(ownerBalanceBefore.sub(BigNumber.from(amount)));
-    expect(await erc1155.balanceOf(erc1155.address, tokenId)).equal(contractBalanceBefore.add(BigNumber.from(amount)));
+    expect(await erc1155.balanceOf(test.address, tokenId)).equal(contractBalanceBefore.add(BigNumber.from(amount)));
 
     // поытка отправить токен на контракт, у которого нет этого интерфейса
     await expect(
-      erc1155.safeTransferFrom(owner.address, test.address, 2, amount, "0x00")
+      erc1155.safeTransferFrom(owner.address, erc1155.address, 2, amount, "0x00")
     ).to.be.revertedWith("ERC1155: transfer to non ERC1155Receiver implementer");
 
     // проверим, что нельзя отправлять токен, если при недостаточном балансе
@@ -213,7 +213,7 @@ describe("Testing ERC1155",  function () {
   });
 
 
-  it("check _safeBatchTransferFrom()", async function () {
+  it("check safeBatchTransferFrom()", async function () {
     
     // будем отправлять 4 токена
     const tokenId2 = 2;
@@ -221,17 +221,17 @@ describe("Testing ERC1155",  function () {
     const amount = 5;
     // баланс целевых адресов
     // до вызова функции safeBatchTransferFrom()
-    let balanceBefore2 = await erc1155.balanceOfBatch([owner.address, spender.address], [tokenId2, tokenId2]);
-    let balanceBefore3 = await erc1155.balanceOfBatch([owner.address, spender.address], [tokenId3, tokenId3]);
+    let balanceBefore2 = await erc1155.balanceOfBatch([owner.address, recipient.address], [tokenId2, tokenId2]);
+    let balanceBefore3 = await erc1155.balanceOfBatch([owner.address, recipient.address], [tokenId3, tokenId3]);
 
     // отправляем токен на адрес 
-    let tx  = await erc1155.safeBatchTransferFrom(owner.address, spender.address, [tokenId2, tokenId3], [amount, amount], "0x00");
+    let tx  = await erc1155.safeBatchTransferFrom(owner.address, recipient.address, [tokenId2, tokenId3], [amount, amount], "0x00");
     await tx.wait();
 
     // баланс целевых адресов
     // после вызова функции mintBatch()
-    let balanceAfter2 = await erc1155.balanceOfBatch([owner.address, spender.address], [tokenId2, tokenId2]);
-    let balanceAfter3 = await erc1155.balanceOfBatch([owner.address, spender.address], [tokenId3, tokenId3]);
+    let balanceAfter2 = await erc1155.balanceOfBatch([owner.address, recipient.address], [tokenId2, tokenId2]);
+    let balanceAfter3 = await erc1155.balanceOfBatch([owner.address, recipient.address], [tokenId3, tokenId3]);
 
     // проверка результатов
     expect(await balanceBefore2[0].sub(amount)).equal(balanceAfter2[0]);
@@ -242,7 +242,7 @@ describe("Testing ERC1155",  function () {
 
     // проверим, что нельзя отправлять токен не от имени владельца
     await expect(
-      erc1155.connect(hacker).safeBatchTransferFrom(owner.address, spender.address, [tokenId2, tokenId3], [amount, amount], "0x00")
+      erc1155.connect(hacker).safeBatchTransferFrom(owner.address, hacker.address, [tokenId2, tokenId3], [amount, amount], "0x00")
     ).to.be.revertedWith("ERC1155: caller is not owner nor approved");
 
     // проверим, что нельзя отправлять токен на нулевой адрес
@@ -250,25 +250,25 @@ describe("Testing ERC1155",  function () {
       erc1155.safeBatchTransferFrom(owner.address, zeroAddress, [tokenId2, tokenId3], [amount, amount], "0x00")
     ).to.be.revertedWith("ERC1155: transfer to the zero address"); 
 
-    // проверим, что размеры массиово должны быть одинаковые
+    // проверим, что размеры массиовов должны быть одинаковые
     await expect(
-      erc1155.safeBatchTransferFrom(owner.address, zeroAddress, [tokenId2, tokenId3], [amount, amount, amount], "0x00")
+      erc1155.safeBatchTransferFrom(owner.address, recipient.address, [tokenId2, tokenId3], [amount, amount, amount], "0x00")
     ).to.be.revertedWith("ERC1155: ids and amounts length mismatch"); 
 
     // отправим на адрес контракта и убедимся, что всё работает
     // баланс целевых адресов
     // до вызова функции safeBatchTransferFrom()
-    balanceBefore2 = await erc1155.balanceOfBatch([owner.address, erc1155.address], [tokenId2, tokenId2]);
-    balanceBefore3 = await erc1155.balanceOfBatch([owner.address, erc1155.address], [tokenId3, tokenId3]);
+    balanceBefore2 = await erc1155.balanceOfBatch([owner.address, test.address], [tokenId2, tokenId2]);
+    balanceBefore3 = await erc1155.balanceOfBatch([owner.address, test.address], [tokenId3, tokenId3]);
 
     // отправляем токен на адрес 
-    tx  = await erc1155.safeBatchTransferFrom(owner.address, erc1155.address, [tokenId2, tokenId3], [amount, amount], "0x00");
+    tx  = await erc1155.safeBatchTransferFrom(owner.address, test.address, [tokenId2, tokenId3], [amount, amount], "0x00");
     await tx.wait();
 
     // баланс целевых адресов
     // после вызова функции mintBatch()
-    balanceAfter2 = await erc1155.balanceOfBatch([owner.address, erc1155.address], [tokenId2, tokenId2]);
-    balanceAfter3 = await erc1155.balanceOfBatch([owner.address, erc1155.address], [tokenId3, tokenId3]);
+    balanceAfter2 = await erc1155.balanceOfBatch([owner.address, test.address], [tokenId2, tokenId2]);
+    balanceAfter3 = await erc1155.balanceOfBatch([owner.address, test.address], [tokenId3, tokenId3]);
 
     // проверка результатов
     expect(await balanceBefore2[0].sub(amount)).equal(balanceAfter2[0]);
@@ -278,12 +278,12 @@ describe("Testing ERC1155",  function () {
 
     // поытка отправить токен на контракт, у которого нет этого интерфейса
     await expect(
-      erc1155.safeBatchTransferFrom(owner.address, test.address, [tokenId2, tokenId3], [amount, amount], "0x00")
+      erc1155.safeBatchTransferFrom(owner.address, erc1155.address, [tokenId2, tokenId3], [amount, amount], "0x00")
     ).to.be.revertedWith("ERC1155: transfer to non ERC1155Receiver implementer");
 
     // проверим, что нельзя отправлять токен, если при недостаточном балансе
     await expect(
-      erc1155.safeBatchTransferFrom(owner.address, erc1155.address, [tokenId2, tokenId3], [amount, amount], "0x00")
+      erc1155.safeBatchTransferFrom(owner.address, recipient.address, [tokenId2, tokenId3], [amount, amount], "0x00")
     ).to.be.revertedWith("ERC1155: insufficient balance for transfer");
   });
 

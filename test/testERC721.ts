@@ -220,21 +220,18 @@ describe("Testing ERC721",  function () {
 
     // отправим на адрес контракта и убедимся, что всё работает
     ownerBalanceBefore = await erc721.balanceOf(owner.address);
-    let contractBalanceBefore = await erc721.balanceOf(erc721.address);
+    let contractBalanceBefore = await erc721.balanceOf(test.address);
 
-    tx  = await erc721["safeTransferFrom(address,address,uint256)"](owner.address, erc721.address, 3);
+    tx  = await erc721["safeTransferFrom(address,address,uint256)"](owner.address, test.address, 3);
     await tx.wait();
 
     expect(await erc721.balanceOf(owner.address)).equal(ownerBalanceBefore.sub(BigNumber.from(1)));
-    expect(await erc721.balanceOf(erc721.address)).equal(contractBalanceBefore.add(BigNumber.from(1)));
+    expect(await erc721.balanceOf(test.address)).equal(contractBalanceBefore.add(BigNumber.from(1)));
 
     // поытка отправить токен на контракт, у которого нет этого интерфейса
     await expect(
-      erc721["safeTransferFrom(address,address,uint256)"](owner.address, test.address, 4)
+      erc721["safeTransferFrom(address,address,uint256)"](owner.address, erc721.address, 4)
     ).to.be.revertedWith("ERC721: transfer to non ERC721Receiver implementer");  
-
-    let result = await test.getTrue();
-    expect(result).equal(true);
   });
 
   it("check supportsInterface()", async function () {

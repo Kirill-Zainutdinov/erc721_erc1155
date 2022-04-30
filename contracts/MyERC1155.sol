@@ -10,7 +10,7 @@ import "./interfaces/IERC1155Receiver.sol";
 import "./interfaces/IERC1155MetadataURI.sol";
 
 
-contract MyERC1155 is  ERC165, IERC1155, IERC1155MetadataURI, IERC1155Receiver {
+contract MyERC1155 is  ERC165, IERC1155, IERC1155MetadataURI {
     using Address for address;
     using Strings for uint256;
 
@@ -264,13 +264,5 @@ contract MyERC1155 is  ERC165, IERC1155, IERC1155MetadataURI, IERC1155Receiver {
             interfaceId == type(IERC1155).interfaceId ||
             interfaceId == type(IERC1155MetadataURI).interfaceId ||
             super.supportsInterface(interfaceId);
-    }
-
-    function onERC1155Received(address , address , uint256 , uint256 , bytes memory) external pure override returns (bytes4){
-        return bytes4(keccak256("onERC1155Received(address,address,uint256,uint256,bytes)"));
-    }
-
-    function onERC1155BatchReceived(address , address , uint256[] calldata , uint256[] calldata , bytes memory) external pure override returns (bytes4){
-        return bytes4(keccak256("onERC1155BatchReceived(address,address,uint256[],uint256[],bytes)"));
     }
 }

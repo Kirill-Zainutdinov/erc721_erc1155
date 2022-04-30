@@ -17,7 +17,7 @@ task("mint721", "mint NFT token")
     .setAction(async (args, hre) => {
         // подключаемся к контракту
         const MyERC721Factory = (await hre.ethers.getContractFactory("MyERC721")) as MyERC721__factory;
-        const erc721 = await MyERC721Factory.attach("0xC8905Bf235601c8D0b62Cf9c90Ff4bF72b95BBbd");
+        const erc721 = await MyERC721Factory.attach("0x586A8c3dbeb7FBD21DA24F2EEcb26DAB8eB2e6D3");
 
         // сохраняем баланс до mint
         const balanceBefore = await erc721.balanceOf(args.to);

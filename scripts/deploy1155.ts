@@ -11,7 +11,7 @@ async function main() {
   erc1155 = await HR1155Factory.deploy("HappyRoger1155", "HR1155", baseUri);
   console.log("Token 1155 deployed to:", erc1155.address); 
   // Deployed and Verifyed in Rinkeby 0x9dFC4CeaF2c38b4A41aECFc168BDD298935E0F5E
-}
+}//0xD2757Ce0B56b1f89b5919d66Add61380c953134E
 
 main().catch((error) => {
   console.error(error);

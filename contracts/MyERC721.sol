@@ -10,7 +10,7 @@ import "./interfaces/IERC721Receiver.sol";
 import "./interfaces/IERC721Metadata.sol";
 
 
-contract MyERC721 is ERC165, IERC721, IERC721Metadata, IERC721Receiver{
+contract MyERC721 is ERC165, IERC721, IERC721Metadata{
   using Address for address;
   using Strings for uint256;
 
@@ -273,7 +273,5 @@ contract MyERC721 is ERC165, IERC721, IERC721Metadata, IERC721Receiver{
       super.supportsInterface(interfaceId);
     }
     
-    function onERC721Received(address , address , uint256 , bytes memory) external pure override returns (bytes4){
-        return bytes4(keccak256("onERC721Received(address,address,uint256,bytes)"));
-    }
+
 }
